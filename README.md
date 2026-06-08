@@ -60,54 +60,109 @@ npm run test:watch
 ```
 
 ### Output Test (Aktual)
-
+```
 Test Suites: 7 passed, 7 total
 Tests:       82 passed, 82 total
 Snapshots:   0 total
 Time:        7.679s
+```
 
 ### Output Coverage (Aktual)
-------------------------|---------|----------|---------|---------|-------------------
-File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-------------------------|---------|----------|---------|---------|-------------------
-All files               |     100 |      100 |     100 |     100 |                   
- models                 |     100 |      100 |     100 |     100 |                   
-  Dividend.js           |     100 |      100 |     100 |     100 |                   
-  Investment.js         |     100 |      100 |     100 |     100 |                   
-  MarketplaceListing.js |     100 |      100 |     100 |     100 |                   
-  Notification.js       |     100 |      100 |     100 |     100 |                   
-  Payment.js            |     100 |      100 |     100 |     100 |                   
-  Property.js           |     100 |      100 |     100 |     100 |                   
-  PropertyImage.js      |     100 |      100 |     100 |     100 |                   
-  Rental.js             |     100 |      100 |     100 |     100 |                   
-  Report.js             |     100 |      100 |     100 |     100 |                   
-  Review.js             |     100 |      100 |     100 |     100 |                   
-  Room.js               |     100 |      100 |     100 |     100 |                   
-  User.js               |     100 |      100 |     100 |     100 |                   
- routes                 |     100 |      100 |     100 |     100 |                   
-  dividendRoutes.js     |     100 |      100 |     100 |     100 |                   
-  index.js              |     100 |      100 |     100 |     100 |                   
-  investmentRoutes.js   |     100 |      100 |     100 |     100 |                   
-  paymentRoutes.js      |     100 |      100 |     100 |     100 |                   
-  rentalRoutes.js       |     100 |      100 |     100 |     100 |                   
-  reportRoutes.js       |     100 |      100 |     100 |     100 |                   
-  roomRoutes.js         |     100 |      100 |     100 |     100 |                   
-------------------------|---------|----------|---------|---------|-------------------
-Test Suites: 7 passed, 7 total
-Tests:       82 passed, 82 total
-Snapshots:   0 total
-Time:        11.214 s
+```
+------------------------|---------|----------|---------|---------|
+File                    | % Stmts | % Branch | % Funcs | % Lines |
+------------------------|---------|----------|---------|---------|
+All files               |     100 |      100 |     100 |     100 |
+ models                 |     100 |      100 |     100 |     100 |
+  Dividend.js           |     100 |      100 |     100 |     100 |
+  Investment.js         |     100 |      100 |     100 |     100 |
+  MarketplaceListing.js |     100 |      100 |     100 |     100 |
+  Notification.js       |     100 |      100 |     100 |     100 |
+  Payment.js            |     100 |      100 |     100 |     100 |
+  Property.js           |     100 |      100 |     100 |     100 |
+  PropertyImage.js      |     100 |      100 |     100 |     100 |
+  Rental.js             |     100 |      100 |     100 |     100 |
+  Report.js             |     100 |      100 |     100 |     100 |
+  Review.js             |     100 |      100 |     100 |     100 |
+  Room.js               |     100 |      100 |     100 |     100 |
+  User.js               |     100 |      100 |     100 |     100 |
+ routes                 |     100 |      100 |     100 |     100 |
+  dividendRoutes.js     |     100 |      100 |     100 |     100 |
+  index.js              |     100 |      100 |     100 |     100 |
+  investmentRoutes.js   |     100 |      100 |     100 |     100 |
+  paymentRoutes.js      |     100 |      100 |     100 |     100 |
+  rentalRoutes.js       |     100 |      100 |     100 |     100 |
+  reportRoutes.js       |     100 |      100 |     100 |     100 |
+  roomRoutes.js         |     100 |      100 |     100 |     100 |
+------------------------|---------|----------|---------|---------|
+```
+
+---
+
+## 🔴 Demonstrasi Regression Testing
+
+Regression testing memastikan perubahan kode tidak merusak fungsionalitas yang sudah berjalan.
+
+### Langkah Demonstrasi
+
+#### 1. Kondisi awal — semua test PASS
+```
+Tests: 82 passed, 82 total
+```
+
+#### 2. Simulasi bug — ubah validasi di controller
+```javascript
+// propertyController.js — sebelum (kode benar)
+if (!title || !description || !location || !category || !fundingTarget || !tokenPrice || !totalTokens) {
+  return res.status(400).json({ status: 'error', message: 'Semua field wajib diisi' });
+}
+
+// Setelah diubah (simulasi bug — validasi diperlemah)
+if (!title) {
+  return res.status(400).json({ status: 'error', message: 'Semua field wajib diisi' });
+}
+```
+
+#### 3. Jalankan test — test GAGAL mendeteksi regresi
+```
+FAIL tests/property.test.js
+  POST /api/properties
+    x Error Scenario — body kosong harus mengembalikan 400 (5ms)
+
+Tests: 1 failed, 81 passed, 82 total
+```
+
+#### 4. Kembalikan kode ke semula — test kembali PASS
+```
+Tests: 82 passed, 82 total
+```
+
+Regression test berhasil mendeteksi bug sebelum sampai ke production.
+
+---
 
 ## 📁 Struktur Folder
+
+```
 test-backend-veztnet/
+├── .github/
+│   └── workflows/
+│       └── test.yml              # GitHub Actions CI
 ├── src/
-│   ├── app.js
-│   ├── config/
-│   ├── controllers/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   └── services/
+│   ├── app.js                    # Entry point Express
+│   ├── config/                   # Konfigurasi database
+│   ├── controllers/              # Business logic
+│   │   ├── authController.js
+│   │   ├── dividendController.js
+│   │   ├── investmentController.js
+│   │   ├── propertyController.js
+│   │   ├── rentalController.js
+│   │   ├── reportController.js
+│   │   └── userController.js
+│   ├── middlewares/              # Auth & role middleware
+│   ├── models/                   # Sequelize models
+│   ├── routes/                   # Definisi route
+│   └── services/                 # Service layer
 ├── tests/
 │   ├── auth.test.js
 │   ├── divident.test.js
@@ -116,14 +171,12 @@ test-backend-veztnet/
 │   ├── rental.test.js
 │   ├── report.test.js
 │   └── user.test.js
-├── .github/
-│   └── workflows/
-│       └── test.yml
-├── jest.config.js
-├── jest.setup.js
-├── jest.setup.afterenv.js
-├── .env.test.example
+├── jest.config.js                # Konfigurasi Jest
+├── jest.setup.js                 # Setup global Jest
+├── jest.setup.afterenv.js        # Setup after env
+├── .env.test.example             # Template env untuk testing
 └── README.md
+```
 
 ---
 
@@ -150,9 +203,12 @@ Pipeline otomatis berjalan di GitHub Actions setiap push atau pull request ke br
 Pipeline meliputi:
 1. Setup PostgreSQL service container
 2. Install dependencies (npm ci)
-3. Sinkronisasi database (sequelize-cli db:migrate)
-4. Jalankan test + coverage
-5. Upload laporan coverage sebagai artifact (retention 7 hari)
+3. Buat enum type database
+4. Seed test users
+5. Jalankan test + coverage
+6. Upload laporan coverage sebagai artifact (retention 7 hari)
+
+---
 
 ## 🔐 Environment Variables
 
@@ -164,11 +220,7 @@ cp .env.test.example .env.test
 
 | Variable | Keterangan |
 |----------|------------|
-| DB_HOST | Host database PostgreSQL |
-| DB_PORT | Port database (default: 5432) |
-| DB_USER | Username database |
-| DB_PASS | Password database |
-| DB_NAME | Nama database test |
+| DATABASE_URL | Connection string PostgreSQL |
 | JWT_SECRET | Secret key JWT |
 | TEST_ADMIN_TOKEN | Token JWT role ADMIN |
 | TEST_OWNER_TOKEN | Token JWT role OWNER |
