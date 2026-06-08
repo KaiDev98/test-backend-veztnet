@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express    = require('express');
 const cors       = require('cors');
-const { sequelize } = require('./models'); // ← GANTI dari config/db ke models
+const { sequelize } = require('./models');
 const routes     = require('./routes/index');
 
 const app  = express();
@@ -29,25 +29,27 @@ app.use((err, req, res, next) => {
   res.status(500).json({ status: 'error', message: 'Terjadi kesalahan pada server' });
 });
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
-const start = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('✅ Database terhubung');
+// ─── Start Server (hanya jika dijalankan langsung, bukan di-require oleh test) ─
+if (require.main === module) {
+  const start = async () => {
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Database terhubung');
 
-    await sequelize.sync({ force: false });
-    console.log('✅ Model tersinkronisasi');
+      await sequelize.sync({ force: false });
+      console.log('✅ Model tersinkronisasi');
 
-    app.listen(PORT, () => {
-      console.log(`🚀 PropShare API berjalan di http://localhost:${PORT}`);
-      console.log(`📖 Environment: ${process.env.NODE_ENV}`);
-    });
-  } catch (error) {
-    console.error('❌ Gagal terhubung ke database:', error);
-    process.exit(1);
-  }
-};
+      app.listen(PORT, () => {
+        console.log(`🚀 PropShare API berjalan di http://localhost:${PORT}`);
+        console.log(`📖 Environment: ${process.env.NODE_ENV}`);
+      });
+    } catch (error) {
+      console.error('❌ Gagal terhubung ke database:', error);
+      process.exit(1);
+    }
+  };
 
-start();
+  start();
+}
 
 module.exports = app;
