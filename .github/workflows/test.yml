@@ -41,27 +41,18 @@ jobs:
 
       - name: 🗄️ Sync Database
         env:
-          NODE_ENV:   test
-          DB_HOST:    localhost
-          DB_PORT:    5432
-          DB_USER:    postgres
-          DB_PASS:    postgres
-          DB_NAME:    propshare_test
-          JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-secret-key' }}
+          NODE_ENV:     test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/propshare_test
         run: npx sequelize-cli db:migrate
 
       - name: 🧪 Run Tests with Coverage
         env:
           NODE_ENV:            test
-          DB_HOST:             localhost
-          DB_PORT:             5432
-          DB_USER:             postgres
-          DB_PASS:             postgres
-          DB_NAME:             propshare_test
-          JWT_SECRET:          ${{ secrets.JWT_SECRET || 'test-secret-key' }}
-          TEST_ADMIN_TOKEN:    ${{ secrets.TEST_ADMIN_TOKEN    || '' }}
-          TEST_OWNER_TOKEN:    ${{ secrets.TEST_OWNER_TOKEN    || '' }}
-          TEST_INVESTOR_TOKEN: ${{ secrets.TEST_INVESTOR_TOKEN || '' }}
+          DATABASE_URL:        postgresql://postgres:postgres@localhost:5432/propshare_test
+          JWT_SECRET:          test-secret-key
+          TEST_ADMIN_TOKEN:    ""
+          TEST_OWNER_TOKEN:    ""
+          TEST_INVESTOR_TOKEN: ""
         run: npm test -- --coverage --forceExit
 
       - name: 📊 Upload Coverage Report
