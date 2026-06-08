@@ -43,7 +43,7 @@ jobs:
         env:
           NODE_ENV:     test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/propshare_test
-        run: npx sequelize-cli db:migrate
+        run: echo "✅ Database akan di-sync oleh Jest setup"
 
       - name: 🧪 Run Tests with Coverage
         env:

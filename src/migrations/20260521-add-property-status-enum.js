@@ -2,7 +2,18 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // PostgreSQL: harus tambah nilai ENUM secara manual
+    // Cek dulu apakah enum sudah ada, kalau belum buat dulu
+    await queryInterface.sequelize.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'enum_properties_status') THEN
+          CREATE TYPE "enum_properties_status" AS ENUM (
+            'DRAFT', 'PENDING', 'ACTIVE', 'INACTIVE', 'SOLD'
+          );
+        END IF;
+      END $$;
+    `);
+
+    -- Tambah nilai baru
     await queryInterface.sequelize.query(
       `ALTER TYPE "enum_properties_status" ADD VALUE IF NOT EXISTS 'READY_TO_RENT';`
     );
@@ -12,8 +23,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    // PostgreSQL tidak support DROP VALUE dari ENUM
-    // Tidak ada rollback untuk ini
     console.warn('Rollback ENUM value tidak didukung PostgreSQL');
   },
 };
