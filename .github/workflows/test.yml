@@ -43,7 +43,25 @@ jobs:
         env:
           NODE_ENV:     test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/propshare_test
-        run: echo "✅ Database akan di-sync oleh Jest setup"
+          PGPASSWORD:   postgres
+        run: |
+          psql -h localhost -U postgres -d propshare_test -c "
+            DO \$\$ BEGIN
+              IF NOT EXISTS (
+                SELECT 1 FROM pg_type WHERE typname = 'enum_properties_status'
+              ) THEN
+                CREATE TYPE \"enum_properties_status\" AS ENUM (
+                  'PENDING',
+                  'ACTIVE',
+                  'READY_TO_RENT',
+                  'FULLY_OCCUPIED',
+                  'FUNDED',
+                  'REJECTED',
+                  'INACTIVE'
+                );
+              END IF;
+            END \$\$;
+          "
 
       - name: 🧪 Run Tests with Coverage
         env:
