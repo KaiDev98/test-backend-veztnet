@@ -68,9 +68,9 @@ jobs:
           NODE_ENV:            test
           DATABASE_URL:        postgresql://postgres:postgres@localhost:5432/propshare_test
           JWT_SECRET:          test-secret-key
-          TEST_ADMIN_TOKEN:    ""
-          TEST_OWNER_TOKEN:    ""
-          TEST_INVESTOR_TOKEN: ""
+          TEST_ADMIN_TOKEN:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODA5MTM1MjksImV4cCI6MTg2NzIyNzEyOX0.ExYmEparswzMpqqHP2twFoWp8lAPkQQKBU6Hngvp0mM"
+          TEST_OWNER_TOKEN:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIiLCJyb2xlIjoiT1dORVIiLCJpYXQiOjE3ODA5MTM1MjksImV4cCI6MTg2NzIyNzEyOX0.CchwfF9ov2bastA69lyrTj8SPwHeAU6S_NQUyfVczvM"
+          TEST_INVESTOR_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJyb2xlIjoiSU5WRVNUT1IiLCJpYXQiOjE3ODA5MTM1MjksImV4cCI6MTg2NzIyNzEyOX0.M2ZIwcEdiqeq2YlGJtNqhEJ9Rbvib8-NypFaqkcj69w"
         run: npm test -- --coverage --forceExit
 
       - name: 📊 Upload Coverage Report
