@@ -63,42 +63,7 @@ jobs:
             END \$\$;
           "
 
-
       - name: 🌱 Seed Test Users
-  env:
-    NODE_ENV:     test
-    DATABASE_URL: postgresql://postgres:postgres@localhost:5432/propshare_test
-  run: |
-    node -e "
-    const { sequelize, User } = require('./src/models');
-    const bcrypt = require('bcryptjs');
-
-    async function seed() {
-      await sequelize.authenticate();
-      await sequelize.sync({ force: false });
-
-      const hash = await bcrypt.hash('password123', 10);
-
-      await User.findOrCreate({
-        where: { id: '00000000-0000-0000-0000-000000000001' },
-        defaults: { id: '00000000-0000-0000-0000-000000000001', email: 'admin@test.com', password: hash, fullName: 'Admin Test', role: 'ADMIN', isSuspended: false }
-      });
-      await User.findOrCreate({
-        where: { id: '00000000-0000-0000-0000-000000000002' },
-        defaults: { id: '00000000-0000-0000-0000-000000000002', email: 'owner@test.com', password: hash, fullName: 'Owner Test', role: 'OWNER', isSuspended: false }
-      });
-      await User.findOrCreate({
-        where: { id: '00000000-0000-0000-0000-000000000003' },
-        defaults: { id: '00000000-0000-0000-0000-000000000003', email: 'investor@test.com', password: hash, fullName: 'Investor Test', role: 'INVESTOR', isSuspended: false }
-      });
-
-      console.log('Seed users berhasil');
-      await sequelize.close();
-    }
-
-    seed().catch(e => { console.error(e); process.exit(1); });
-    "
-
         env:
           NODE_ENV:     test
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/propshare_test
@@ -115,15 +80,15 @@ jobs:
 
             await User.findOrCreate({
               where: { id: '00000000-0000-0000-0000-000000000001' },
-              defaults: { id: '00000000-0000-0000-0000-000000000001', email: 'admin@test.com', password: hash, role: 'ADMIN', isSuspended: false }
+              defaults: { id: '00000000-0000-0000-0000-000000000001', email: 'admin@test.com', password: hash, fullName: 'Admin Test', role: 'ADMIN', isSuspended: false }
             });
             await User.findOrCreate({
               where: { id: '00000000-0000-0000-0000-000000000002' },
-              defaults: { id: '00000000-0000-0000-0000-000000000002', email: 'owner@test.com', password: hash, role: 'OWNER', isSuspended: false }
+              defaults: { id: '00000000-0000-0000-0000-000000000002', email: 'owner@test.com', password: hash, fullName: 'Owner Test', role: 'OWNER', isSuspended: false }
             });
             await User.findOrCreate({
               where: { id: '00000000-0000-0000-0000-000000000003' },
-              defaults: { id: '00000000-0000-0000-0000-000000000003', email: 'investor@test.com', password: hash, role: 'INVESTOR', isSuspended: false }
+              defaults: { id: '00000000-0000-0000-0000-000000000003', email: 'investor@test.com', password: hash, fullName: 'Investor Test', role: 'INVESTOR', isSuspended: false }
             });
 
             console.log('Seed users berhasil');
