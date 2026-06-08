@@ -63,14 +63,49 @@ jobs:
             END \$\$;
           "
 
+      - name: 🌱 Seed Test Users
+        env:
+          NODE_ENV:     test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/propshare_test
+        run: |
+          node -e "
+          const { sequelize, User } = require('./src/models');
+          const bcrypt = require('bcryptjs');
+
+          async function seed() {
+            await sequelize.authenticate();
+            await sequelize.sync({ force: false });
+
+            const hash = await bcrypt.hash('password123', 10);
+
+            await User.findOrCreate({
+              where: { id: '00000000-0000-0000-0000-000000000001' },
+              defaults: { id: '00000000-0000-0000-0000-000000000001', email: 'admin@test.com', password: hash, role: 'ADMIN', isSuspended: false }
+            });
+            await User.findOrCreate({
+              where: { id: '00000000-0000-0000-0000-000000000002' },
+              defaults: { id: '00000000-0000-0000-0000-000000000002', email: 'owner@test.com', password: hash, role: 'OWNER', isSuspended: false }
+            });
+            await User.findOrCreate({
+              where: { id: '00000000-0000-0000-0000-000000000003' },
+              defaults: { id: '00000000-0000-0000-0000-000000000003', email: 'investor@test.com', password: hash, role: 'INVESTOR', isSuspended: false }
+            });
+
+            console.log('Seed users berhasil');
+            await sequelize.close();
+          }
+
+          seed().catch(e => { console.error(e); process.exit(1); });
+          "
+
       - name: 🧪 Run Tests with Coverage
         env:
           NODE_ENV:            test
           DATABASE_URL:        postgresql://postgres:postgres@localhost:5432/propshare_test
           JWT_SECRET:          test-secret-key
-          TEST_ADMIN_TOKEN:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3ODA5MTM1MjksImV4cCI6MTg2NzIyNzEyOX0.ExYmEparswzMpqqHP2twFoWp8lAPkQQKBU6Hngvp0mM"
-          TEST_OWNER_TOKEN:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIiLCJyb2xlIjoiT1dORVIiLCJpYXQiOjE3ODA5MTM1MjksImV4cCI6MTg2NzIyNzEyOX0.CchwfF9ov2bastA69lyrTj8SPwHeAU6S_NQUyfVczvM"
-          TEST_INVESTOR_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJyb2xlIjoiSU5WRVNUT1IiLCJpYXQiOjE3ODA5MTM1MjksImV4cCI6MTg2NzIyNzEyOX0.M2ZIwcEdiqeq2YlGJtNqhEJ9Rbvib8-NypFaqkcj69w"
+          TEST_ADMIN_TOKEN:    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4MDkxMzgzMCwiZXhwIjoxODY3MjI3NDMwfQ.-AMb0L43suh6oUsHdG7S0aRnLWH5Ed2Ym9n4dZMZkmA
+          TEST_OWNER_TOKEN:    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMiIsInJvbGUiOiJPV05FUiIsImlhdCI6MTc4MDkxMzgzMCwiZXhwIjoxODY3MjI3NDMwfQ.AQYBL9K7eS26neEIIJO4m3hq8Z_cz9e09A1wH2yz43E
+          TEST_INVESTOR_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMyIsInJvbGUiOiJJTlZFU1RPUiIsImlhdCI6MTc4MDkxMzgzMCwiZXhwIjoxODY3MjI3NDMwfQ.O-dGoYfiqtj259HNVRhs91kFKns037DxJuoQN96Dv8g
         run: npm test -- --coverage --forceExit
 
       - name: 📊 Upload Coverage Report
